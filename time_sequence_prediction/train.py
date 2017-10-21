@@ -48,7 +48,7 @@ if __name__ == '__main__':
     seq.double()
     criterion = nn.MSELoss()
     # use LBFGS as optimizer since we can load the whole data to train
-    optimizer = optim.LBFGS(seq.parameters(), lr=0.01)
+    optimizer = optim.LBFGS(seq.parameters(), lr=0.1)
     # begin to train
     for i in range(300):
         print('STEP: ', i)
@@ -86,5 +86,5 @@ if __name__ == '__main__':
         import os
         if not os.path.isdir('plots'):
             os.mkdir('plots')
-        plt.savefig(os.path.join('plots', 'lr_0.01_epochs_300_predict%04d.png' % i))
+        plt.savefig(os.path.join('plots', 'lr_0.10_epochs_300_predict%04d.png' % i))
         plt.close()
