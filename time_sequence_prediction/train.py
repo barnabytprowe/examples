@@ -33,9 +33,8 @@ class Sequence(nn.Module):
         return outputs
 
 
-
 if __name__ == '__main__':
-    # set ramdom seed to 0
+    # set random seed to 0
     np.random.seed(0)
     torch.manual_seed(0)
     # load data and make training set
@@ -49,9 +48,9 @@ if __name__ == '__main__':
     seq.double()
     criterion = nn.MSELoss()
     # use LBFGS as optimizer since we can load the whole data to train
-    optimizer = optim.LBFGS(seq.parameters(), lr=0.8)
-    #begin to train
-    for i in range(15):
+    optimizer = optim.LBFGS(seq.parameters(), lr=0.03)
+    # begin to train
+    for i in range(100):
         print('STEP: ', i)
         def closure():
             optimizer.zero_grad()
@@ -69,14 +68,18 @@ if __name__ == '__main__':
         y = pred.data.numpy()
         # draw the result
         plt.figure(figsize=(30,10))
-        plt.title('Predict future values for time sequences\n(Dashlines are predicted values)', fontsize=30)
+        plt.title(
+            'Predict future values for time sequences\n(Dashlines are predicted values)',
+            fontsize=30)
         plt.xlabel('x', fontsize=20)
         plt.ylabel('y', fontsize=20)
         plt.xticks(fontsize=20)
         plt.yticks(fontsize=20)
         def draw(yi, color):
             plt.plot(np.arange(input.size(1)), yi[:input.size(1)], color, linewidth = 2.0)
-            plt.plot(np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':', linewidth = 2.0)
+            plt.plot(
+                np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':',
+                linewidth = 2.0)
         draw(y[0], 'r')
         draw(y[1], 'g')
         draw(y[2], 'b')
