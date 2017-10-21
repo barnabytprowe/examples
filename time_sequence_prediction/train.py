@@ -48,7 +48,7 @@ if __name__ == '__main__':
     seq.double()
     criterion = nn.MSELoss()
     # use LBFGS as optimizer since we can load the whole data to train
-    optimizer = optim.LBFGS(seq.parameters(), lr=0.03)
+    optimizer = optim.LBFGS(seq.parameters(), lr=0.01)
     # begin to train
     for i in range(300):
         print('STEP: ', i)
