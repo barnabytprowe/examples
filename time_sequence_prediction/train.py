@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # use LBFGS as optimizer since we can load the whole data to train
     optimizer = optim.LBFGS(seq.parameters(), lr=0.03)
     # begin to train
-    for i in range(100):
+    for i in range(300):
         print('STEP: ', i)
         def closure():
             optimizer.zero_grad()
@@ -83,5 +83,8 @@ if __name__ == '__main__':
         draw(y[0], 'r')
         draw(y[1], 'g')
         draw(y[2], 'b')
-        plt.savefig('predict%d.pdf'%i)
+        import os
+        if not os.path.isdir('plots'):
+            os.mkdir('plots')
+        plt.savefig(os.path.join('plots', 'lr_0.03_epochs_300_predict%04d.png' % i))
         plt.close()
