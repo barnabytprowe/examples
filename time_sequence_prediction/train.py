@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 class Sequence(nn.Module):
     def __init__(self):
         super(Sequence, self).__init__()
-        self.lstm1 = nn.LSTMCell(1, 51)
-        self.lstm2 = nn.LSTMCell(51, 1)
+        self.lstm1 = nn.LSTMCell(1, 8)
+        self.lstm2 = nn.LSTMCell(8, 1)
 
     def forward(self, input, future = 0):
         outputs = []
-        h_t = Variable(torch.zeros(input.size(0), 51).double(), requires_grad=False)
-        c_t = Variable(torch.zeros(input.size(0), 51).double(), requires_grad=False)
+        h_t = Variable(torch.zeros(input.size(0), 8).double(), requires_grad=False)
+        c_t = Variable(torch.zeros(input.size(0), 8).double(), requires_grad=False)
         h_t2 = Variable(torch.zeros(input.size(0), 1).double(), requires_grad=False)
         c_t2 = Variable(torch.zeros(input.size(0), 1).double(), requires_grad=False)
 
@@ -39,6 +39,9 @@ if __name__ == '__main__':
     torch.manual_seed(0)
     # load data and make training set
     data = torch.load('traindata.pt')
+    # add a little noise for fun
+    data += 0.3 * np.random.randn(*data.shape)
+    # build input, target sets
     input = Variable(torch.from_numpy(data[3:, :-1]), requires_grad=False)
     target = Variable(torch.from_numpy(data[3:, 1:]), requires_grad=False)
     test_input = Variable(torch.from_numpy(data[:3, :-1]), requires_grad=False)
@@ -48,7 +51,7 @@ if __name__ == '__main__':
     seq.double()
     criterion = nn.MSELoss()
     # use LBFGS as optimizer since we can load the whole data to train
-    optimizer = optim.LBFGS(seq.parameters(), lr=0.1)
+    optimizer = optim.LBFGS(seq.parameters(), lr=0.10)
     # begin to train
     for i in range(300):
         print('STEP: ', i)
@@ -75,16 +78,17 @@ if __name__ == '__main__':
         plt.ylabel('y', fontsize=20)
         plt.xticks(fontsize=20)
         plt.yticks(fontsize=20)
-        def draw(yi, color):
-            plt.plot(np.arange(input.size(1)), yi[:input.size(1)], color, linewidth = 2.0)
+        def draw(y, i, color):
+            plt.plot(np.arange(input.size(1)), test_input.data.numpy()[i, :], color+".")
+            plt.plot(np.arange(input.size(1)), y[i, :input.size(1)], color, linewidth = 2.0)
             plt.plot(
-                np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':',
-                linewidth = 2.0)
-        draw(y[0], 'r')
-        draw(y[1], 'g')
-        draw(y[2], 'b')
+                np.arange(input.size(1), input.size(1) + future), y[i, input.size(1):],
+                color+':', linewidth = 2.0)
+        draw(y, 0, 'r')
+        draw(y, 1, 'g')
+        draw(y, 2, 'b')
         import os
         if not os.path.isdir('plots'):
             os.mkdir('plots')
-        plt.savefig(os.path.join('plots', 'lr_0.10_epochs_300_predict%04d.png' % i))
+        plt.savefig(os.path.join('plots', 'lr_0.10_rantest_epochs_300_predict%04d.png' % i))
         plt.close()
