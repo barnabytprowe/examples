@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 class Sequence(nn.Module):
     def __init__(self):
         super(Sequence, self).__init__()
-        self.lstm1 = nn.LSTMCell(1, 8)
-        self.lstm2 = nn.LSTMCell(8, 1)
+        self.lstm1 = nn.LSTMCell(1, 2)
+        self.lstm2 = nn.LSTMCell(2, 1)
 
     def forward(self, input, future = 0):
         outputs = []
-        h_t = Variable(torch.zeros(input.size(0), 8).double(), requires_grad=False)
-        c_t = Variable(torch.zeros(input.size(0), 8).double(), requires_grad=False)
+        h_t = Variable(torch.zeros(input.size(0), 2).double(), requires_grad=False)
+        c_t = Variable(torch.zeros(input.size(0), 2).double(), requires_grad=False)
         h_t2 = Variable(torch.zeros(input.size(0), 1).double(), requires_grad=False)
         c_t2 = Variable(torch.zeros(input.size(0), 1).double(), requires_grad=False)
 
@@ -40,10 +40,10 @@ if __name__ == '__main__':
     # load data and make training set
     data = torch.load('traindata.pt')
     # add a little noise for fun
-    data += 0.3 * np.random.randn(*data.shape)
+    data += 0. * np.random.randn(*data.shape)
     # build input, target sets
-    input = Variable(torch.from_numpy(data[95:, :-1]), requires_grad=False)
-    target = Variable(torch.from_numpy(data[95:, 1:]), requires_grad=False)
+    input = Variable(torch.from_numpy(data[99:, :-1]), requires_grad=False)
+    target = Variable(torch.from_numpy(data[99:, 1:]), requires_grad=False)
     test_input = Variable(torch.from_numpy(data[:3, :-1]), requires_grad=False)
     test_target = Variable(torch.from_numpy(data[:3, 1:]), requires_grad=False)
     # build the model
@@ -79,16 +79,18 @@ if __name__ == '__main__':
         plt.xticks(fontsize=20)
         plt.yticks(fontsize=20)
         def draw(y, i, color):
-            plt.plot(np.arange(input.size(1)), test_input.data.numpy()[i, :], color+".")
-            plt.plot(np.arange(input.size(1)), y[i, :input.size(1)], color, linewidth = 2.0)
+            plt.plot(
+                np.arange(input.size(1)), test_input.data.numpy()[i, :], color+".",
+                markersize=1.5)
+            plt.plot(np.arange(input.size(1)), y[i, :input.size(1)], color, linewidth = 1.5)
             plt.plot(
                 np.arange(input.size(1), input.size(1) + future), y[i, input.size(1):],
-                color+':', linewidth = 2.0)
+                color+'--', linewidth = 2.0)
         draw(y, 0, 'r')
         draw(y, 1, 'g')
         draw(y, 2, 'b')
         import os
         if not os.path.isdir('plots'):
             os.mkdir('plots')
-        plt.savefig(os.path.join('plots', 'lr_0.10_rantest_i05_epochs_300_predict%04d.png' % i))
+        plt.savefig(os.path.join('plots', 'lr_0.10_nonoise_i01_epochs_300_predict%04d.png' % i))
         plt.close()
