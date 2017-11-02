@@ -42,8 +42,8 @@ if __name__ == '__main__':
     # add a little noise for fun
     data += 0.3 * np.random.randn(*data.shape)
     # build input, target sets
-    input = Variable(torch.from_numpy(data[3:, :-1]), requires_grad=False)
-    target = Variable(torch.from_numpy(data[3:, 1:]), requires_grad=False)
+    input = Variable(torch.from_numpy(data[90:, :-1]), requires_grad=False)
+    target = Variable(torch.from_numpy(data[90:, 1:]), requires_grad=False)
     test_input = Variable(torch.from_numpy(data[:3, :-1]), requires_grad=False)
     test_target = Variable(torch.from_numpy(data[:3, 1:]), requires_grad=False)
     # build the model
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         print('test loss:', loss.data.numpy()[0])
         y = pred.data.numpy()
         # draw the result
-        plt.figure(figsize=(30,10))
+        plt.figure(figsize=(30, 10))
         plt.title(
             'Predict future values for time sequences\n(Dashlines are predicted values)',
             fontsize=30)
@@ -90,5 +90,5 @@ if __name__ == '__main__':
         import os
         if not os.path.isdir('plots'):
             os.mkdir('plots')
-        plt.savefig(os.path.join('plots', 'lr_0.10_rantest_epochs_300_predict%04d.png' % i))
+        plt.savefig(os.path.join('plots', 'lr_0.10_rantest_i10_epochs_300_predict%04d.png' % i))
         plt.close()
