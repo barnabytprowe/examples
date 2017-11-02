@@ -11,13 +11,13 @@ import matplotlib.pyplot as plt
 class Sequence(nn.Module):
     def __init__(self):
         super(Sequence, self).__init__()
-        self.lstm1 = nn.LSTMCell(1, 2)
-        self.lstm2 = nn.LSTMCell(2, 1)
+        self.lstm1 = nn.LSTMCell(1, 32)
+        self.lstm2 = nn.LSTMCell(32, 1)
 
     def forward(self, input, future = 0):
         outputs = []
-        h_t = Variable(torch.zeros(input.size(0), 2).double(), requires_grad=False)
-        c_t = Variable(torch.zeros(input.size(0), 2).double(), requires_grad=False)
+        h_t = Variable(torch.zeros(input.size(0), 32).double(), requires_grad=False)
+        c_t = Variable(torch.zeros(input.size(0), 32).double(), requires_grad=False)
         h_t2 = Variable(torch.zeros(input.size(0), 1).double(), requires_grad=False)
         c_t2 = Variable(torch.zeros(input.size(0), 1).double(), requires_grad=False)
 
@@ -80,8 +80,7 @@ if __name__ == '__main__':
         plt.yticks(fontsize=20)
         def draw(y, i, color):
             plt.plot(
-                np.arange(input.size(1)), test_input.data.numpy()[i, :], color+".",
-                markersize=1.5)
+                np.arange(input.size(1)), test_input.data.numpy()[i, :], color+"o", ms=4)
             plt.plot(np.arange(input.size(1)), y[i, :input.size(1)], color, linewidth = 1.5)
             plt.plot(
                 np.arange(input.size(1), input.size(1) + future), y[i, input.size(1):],
@@ -92,5 +91,5 @@ if __name__ == '__main__':
         import os
         if not os.path.isdir('plots'):
             os.mkdir('plots')
-        plt.savefig(os.path.join('plots', 'lr_0.10_nonoise_i01_epochs_300_predict%04d.png' % i))
+        plt.savefig(os.path.join('plots', 'lr_0.10_nonoise_i01_h32_epochs_300_predict%04d.png' % i))
         plt.close()
